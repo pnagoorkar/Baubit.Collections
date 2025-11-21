@@ -12,13 +12,13 @@
     <EmitCompilerGeneratedFiles>true</EmitCompilerGeneratedFiles>
     <PreserveCompilationContext>true</PreserveCompilationContext>
     <Deterministic>true</Deterministic>
-    <RepositoryUrl>https://github.com/pnagoorkar/Baubit.Reflection</RepositoryUrl>
+    <RepositoryUrl>https://github.com/pnagoorkar/Baubit.Collections</RepositoryUrl>
     <Authors>Prashant Nagoorkar</Authors>
     <SignAssembly>$(SignAssembly)</SignAssembly>
     <AssemblyOriginatorKeyFile>$(KeyFilePath)</AssemblyOriginatorKeyFile>
     <EmitCompilerGeneratedFiles>false</EmitCompilerGeneratedFiles>
-    <Description>TBD</Description>
-    <PackageTags>TBD</PackageTags>
+    <Description>Thread-safe collection types for .NET that fill gaps in the standard library. Includes ConcurrentList&lt;T&gt;, a thread-safe IList&lt;T&gt; implementation with indexed access, enumeration, and reader-writer lock semantics for efficient concurrent operations.</Description>
+    <PackageTags>concurrent;thread-safe;collections;concurrentlist;parallel;threading;lock-free;reader-writer-lock;concurrent-collections</PackageTags>
   </PropertyGroup>
 
   <ItemGroup>
