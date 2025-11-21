@@ -1,6 +1,7 @@
 # Baubit.Collections
 
-[![CircleCI](https://circleci.com/gh/pnagoorkar/Baubit.Collections.svg?style=shield)](https://circleci.com/gh/pnagoorkar/Baubit.Collections)
+
+[![CircleCI](https://dl.circleci.com/status-badge/img/circleci/TpM4QUH8Djox7cjDaNpup5/2zTgJzKbD2m3nXCf5LKvqS/tree/master.svg?style=svg)](https://dl.circleci.com/status-badge/redirect/circleci/TpM4QUH8Djox7cjDaNpup5/2zTgJzKbD2m3nXCf5LKvqS/tree/master)
 [![codecov](https://codecov.io/gh/pnagoorkar/Baubit.Collections/branch/master/graph/badge.svg)](https://codecov.io/gh/pnagoorkar/Baubit.Collections)
 [![NuGet](https://img.shields.io/nuget/v/Baubit.Collections.svg)](https://www.nuget.org/packages/Baubit.Collections/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
