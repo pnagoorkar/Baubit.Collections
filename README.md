@@ -1,28 +1,49 @@
-# Baubit.Template
+# Baubit.Collections
 
-A template repository for .NET projects with CircleCI integration, code coverage, and automated package publishing.
 
-## Using This Template
+[![CircleCI](https://dl.circleci.com/status-badge/img/circleci/TpM4QUH8Djox7cjDaNpup5/2zTgJzKbD2m3nXCf5LKvqS/tree/master.svg?style=svg)](https://dl.circleci.com/status-badge/redirect/circleci/TpM4QUH8Djox7cjDaNpup5/2zTgJzKbD2m3nXCf5LKvqS/tree/master)
+[![codecov](https://codecov.io/gh/pnagoorkar/Baubit.Collections/branch/master/graph/badge.svg)](https://codecov.io/gh/pnagoorkar/Baubit.Collections)
+[![NuGet](https://img.shields.io/nuget/v/Baubit.Collections.svg)](https://www.nuget.org/packages/Baubit.Collections/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-Follow these steps to use this template for your new project:
+Thread-safe collection types for .NET 9 that fill gaps in the standard library.
 
-1. **Update .circleci/config.yml with solution and project names in your repository**
-   - Replace all instances of `<YOUR_SOLUTION_NAME>` with your solution name
-   - Replace all instances of `<YOUR_PROJECT_NAME>` with your project name
+## Why?
 
-2. **Add CODECOV_TOKEN_Your_Project_Name in Context_Prashant in CircleCI**
-   - Go to CircleCI project settings
-   - Navigate to Contexts and find `Context_Prashant`
-   - Add an environment variable named `CODECOV_TOKEN_{YOUR_PROJECT_NAME}` 
-     - Replace dots in your project name with underscores (e.g., `My.Project` becomes `CODECOV_TOKEN_My_Project`)
-     - This is required for CircleCI environment variable naming conventions
-   - Set the value to your Codecov token from Codecov.io
+I needed a thread-safe list with indexed access and enumeration support. `ConcurrentBag<T>` doesn't provide ordering or indexing, and `List<T>` with manual locking is error-prone. So I built `ConcurrentList<T>`.
 
-3. **Configure repo settings in GitHub - branch protection rules etc**
-   - Set up branch protection rules for `master` and `release` branches
-   - Configure required status checks
-   - Set up code review requirements as needed
+## ConcurrentList<T>
 
-4. **Import projects in Codecov.io and Snyk.io**
-   - Import your repository in [Codecov.io](https://codecov.io) for code coverage tracking
-   - Import your repository in [Snyk.io](https://snyk.io) for security vulnerability scanning
+A thread-safe `IList<T>` implementation using `ReaderWriterLockSlim` for efficient concurrent reads with exclusive writes.
+
+```csharp
+var list = new ConcurrentList<int>();
+
+// Multiple threads can read simultaneously
+Parallel.For(0, 100, i => {
+    var count = list.Count;
+    var item = list[0];
+});
+
+// Writes are exclusive and thread-safe
+Parallel.For(0, 100, i => list.Add(i));
+
+// Safe enumeration (uses snapshot)
+foreach (var item in list) {
+    list.Add(999); // Won't affect the enumeration
+}
+```
+
+## Installation
+
+```bash
+dotnet add package Baubit.Collections
+```
+
+## Testing
+
+77 tests with 86% line coverage and 100% branch coverage, including extensive thread-safety tests.
+
+---
+
+More collections coming as needed. MIT Licensed.
