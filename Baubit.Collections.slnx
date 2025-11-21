@@ -1,3 +1,4 @@
 <Solution>
+  <Project Path="Baubit.Collections.Test/Baubit.Collections.Test.csproj" Id="8d2e621e-de41-448b-9acd-d37defc40755" />
   <Project Path="Baubit.Collections/Baubit.Collections.csproj" />
 </Solution>
