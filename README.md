@@ -6,7 +6,7 @@
 [![NuGet](https://img.shields.io/nuget/v/Baubit.Collections.svg)](https://www.nuget.org/packages/Baubit.Collections/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-Thread-safe collection types for .NET 9 that fill gaps in the standard library.
+Thread-safe collection types that fill gaps in the standard library.
 
 ## Why?
 
@@ -39,11 +39,6 @@ foreach (var item in list) {
 ```bash
 dotnet add package Baubit.Collections
 ```
-
-## Testing
-
-77 tests with 86% line coverage and 100% branch coverage, including extensive thread-safety tests.
-
 ---
 
 More collections coming as needed. MIT Licensed.
