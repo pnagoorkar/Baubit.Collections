@@ -1,9 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net9.0</TargetFramework>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
+    <TargetFramework>netstandard2.0</TargetFramework>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <NoWarn>$(NoWarn);CS1591</NoWarn>
     <AssemblyVersion>$(AssemblyVersion)</AssemblyVersion>
@@ -17,8 +15,8 @@
     <SignAssembly>$(SignAssembly)</SignAssembly>
     <AssemblyOriginatorKeyFile>$(KeyFilePath)</AssemblyOriginatorKeyFile>
     <EmitCompilerGeneratedFiles>false</EmitCompilerGeneratedFiles>
-    <Description>Thread-safe collection types for .NET that fill gaps in the standard library. Includes ConcurrentList&lt;T&gt;, a thread-safe IList&lt;T&gt; implementation with indexed access, enumeration, and reader-writer lock semantics for efficient concurrent operations.</Description>
-    <PackageTags>concurrent;thread-safe;collections;concurrentlist;parallel;threading;lock-free;reader-writer-lock;concurrent-collections</PackageTags>
+    <Description>Thread-safe collection types that fill gaps in the standard library. Includes ConcurrentList&lt;T&gt;, a thread-safe IList&lt;T&gt; implementation with indexed access, enumeration, and reader-writer lock semantics for efficient concurrent operations.</Description>
+    <PackageTags>concurrent;thread-safe;collections;concurrentlist;parallel;threading;lock-free;reader-writer-lock;concurrent-collections;baubit</PackageTags>
   </PropertyGroup>
 
   <ItemGroup>
