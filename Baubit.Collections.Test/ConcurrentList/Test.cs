@@ -1086,6 +1086,336 @@ namespace Baubit.Collections.Test.ConcurrentList
 
         #endregion
 
+        #region GetOrAdd Tests
+
+        [Fact]
+        public void GetOrAdd_NoMatch_AddsAndReturnsNewItem()
+        {
+            var list = new ConcurrentList<int>(new[] { 1, 2, 3 });
+            var result = list.GetOrAdd(4, x => x == 4);
+            
+            Assert.Equal(4, result);
+            Assert.Equal(4, list.Count);
+            Assert.Contains(4, list);
+        }
+
+        [Fact]
+        public void GetOrAdd_MatchFound_ReturnsExistingItem()
+        {
+            var list = new ConcurrentList<int>(new[] { 1, 2, 3 });
+            var result = list.GetOrAdd(99, x => x == 2);
+            
+            Assert.Equal(2, result);
+            Assert.Equal(3, list.Count);
+            Assert.DoesNotContain(99, list);
+        }
+
+        [Fact]
+        public void GetOrAdd_EmptyList_AddsAndReturnsItem()
+        {
+            var list = new ConcurrentList<int>();
+            var result = list.GetOrAdd(42, x => x == 42);
+            
+            Assert.Equal(42, result);
+            Assert.Single(list);
+            Assert.Contains(42, list);
+        }
+
+        [Fact]
+        public void GetOrAdd_NullPredicate_ThrowsArgumentNullException()
+        {
+            var list = new ConcurrentList<int>(new[] { 1, 2, 3 });
+            Assert.Throws<ArgumentNullException>(() => list.GetOrAdd(4, null!));
+        }
+
+        [Fact]
+        public void GetOrAdd_PredicateMatchesFirst_ReturnsFirstItem()
+        {
+            var list = new ConcurrentList<int>(new[] { 10, 20, 30, 40 });
+            var result = list.GetOrAdd(99, x => x >= 10);
+            
+            Assert.Equal(10, result);
+            Assert.Equal(4, list.Count);
+        }
+
+        [Fact]
+        public void GetOrAdd_PredicateMatchesLast_ReturnsLastItem()
+        {
+            var list = new ConcurrentList<int>(new[] { 10, 20, 30, 40 });
+            var result = list.GetOrAdd(99, x => x == 40);
+            
+            Assert.Equal(40, result);
+            Assert.Equal(4, list.Count);
+        }
+
+        [Fact]
+        public void GetOrAdd_PredicateMatchesMiddle_ReturnsMiddleItem()
+        {
+            var list = new ConcurrentList<int>(new[] { 10, 20, 30, 40 });
+            var result = list.GetOrAdd(99, x => x == 20);
+            
+            Assert.Equal(20, result);
+            Assert.Equal(4, list.Count);
+        }
+
+        [Fact]
+        public void GetOrAdd_ReferenceType_MatchFound_ReturnsExisting()
+        {
+            var list = new ConcurrentList<string>(new[] { "apple", "banana", "cherry" });
+            var result = list.GetOrAdd("orange", x => x.StartsWith("b"));
+            
+            Assert.Equal("banana", result);
+            Assert.Equal(3, list.Count);
+            Assert.DoesNotContain("orange", list);
+        }
+
+        [Fact]
+        public void GetOrAdd_ReferenceType_NoMatch_AddsNew()
+        {
+            var list = new ConcurrentList<string>(new[] { "apple", "banana", "cherry" });
+            var result = list.GetOrAdd("orange", x => x.StartsWith("z"));
+            
+            Assert.Equal("orange", result);
+            Assert.Equal(4, list.Count);
+            Assert.Contains("orange", list);
+        }
+
+        [Fact]
+        public void GetOrAdd_NullItem_CanBeAdded()
+        {
+            var list = new ConcurrentList<string?>(new[] { "apple", "banana" });
+            var result = list.GetOrAdd(null, x => x == null);
+            
+            Assert.Null(result);
+            Assert.Equal(3, list.Count);
+        }
+
+        [Fact]
+        public void GetOrAdd_NullItem_MatchesExistingNull()
+        {
+            var list = new ConcurrentList<string?>(new[] { "apple", null, "banana" });
+            var result = list.GetOrAdd("orange", x => x == null);
+            
+            Assert.Null(result);
+            Assert.Equal(3, list.Count);
+            Assert.DoesNotContain("orange", list);
+        }
+
+        [Fact]
+        public void GetOrAdd_ComplexPredicate_WorksCorrectly()
+        {
+            var list = new ConcurrentList<int>(new[] { 1, 2, 3, 4, 5 });
+            var result = list.GetOrAdd(10, x => x > 2 && x < 5);
+            
+            // Should match either 3 or 4 (first matching is 3)
+            Assert.True(result == 3 || result == 4);
+            Assert.Equal(5, list.Count);
+        }
+
+        [Fact]
+        public void GetOrAdd_PredicateNeverMatches_AddsNewItem()
+        {
+            var list = new ConcurrentList<int>(new[] { 1, 2, 3, 4, 5 });
+            var result = list.GetOrAdd(100, x => x > 1000);
+            
+            Assert.Equal(100, result);
+            Assert.Equal(6, list.Count);
+            Assert.Contains(100, list);
+        }
+
+        [Fact]
+        public void GetOrAdd_MultipleCallsWithDifferentItems_AddsAll()
+        {
+            var list = new ConcurrentList<int>();
+            
+            var result1 = list.GetOrAdd(1, x => x == 1);
+            var result2 = list.GetOrAdd(2, x => x == 2);
+            var result3 = list.GetOrAdd(3, x => x == 3);
+            
+            Assert.Equal(1, result1);
+            Assert.Equal(2, result2);
+            Assert.Equal(3, result3);
+            Assert.Equal(3, list.Count);
+        }
+
+        [Fact]
+        public void GetOrAdd_MultipleCallsWithSamePredicate_ReturnsExisting()
+        {
+            var list = new ConcurrentList<int>();
+            
+            var result1 = list.GetOrAdd(100, x => x == 100);
+            var result2 = list.GetOrAdd(200, x => x == 100);
+            var result3 = list.GetOrAdd(300, x => x == 100);
+            
+            Assert.Equal(100, result1);
+            Assert.Equal(100, result2);
+            Assert.Equal(100, result3);
+            Assert.Single(list);
+            Assert.Equal(100, list[0]);
+        }
+
+        [Fact]
+        public void ThreadSafety_GetOrAdd_ConcurrentCalls_OnlyOneItemAdded()
+        {
+            var list = new ConcurrentList<int>();
+            var tasks = new List<Task<int>>();
+            var addedItems = new ConcurrentBag<int>();
+
+            // Multiple threads try to add different items with same predicate
+            for (int i = 0; i < 20; i++)
+            {
+                var value = i + 1;
+                tasks.Add(Task.Run(() =>
+                {
+                    var result = list.GetOrAdd(value, x => x > 0);
+                    addedItems.Add(result);
+                    return result;
+                }));
+            }
+
+            Task.WaitAll(tasks.ToArray());
+
+            // Only one item should be in the list
+            Assert.Single(list);
+            
+            // All tasks should return the same value (the first one added)
+            var uniqueResults = addedItems.Distinct().ToList();
+            Assert.Single(uniqueResults);
+        }
+
+        [Fact]
+        public void ThreadSafety_GetOrAdd_MixedOperations_Success()
+        {
+            var list = new ConcurrentList<int>(new[] { 1, 2, 3 });
+            var tasks = new List<Task>();
+            var exceptions = new ConcurrentBag<Exception>();
+
+            // GetOrAdd operations
+            for (int i = 0; i < 5; i++)
+            {
+                var value = i + 10;
+                tasks.Add(Task.Run(() =>
+                {
+                    try
+                    {
+                        for (int j = 0; j < 100; j++)
+                        {
+                            list.GetOrAdd(value, x => x == value);
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        exceptions.Add(ex);
+                    }
+                }));
+            }
+
+            // Read operations
+            for (int i = 0; i < 5; i++)
+            {
+                tasks.Add(Task.Run(() =>
+                {
+                    try
+                    {
+                        for (int j = 0; j < 100; j++)
+                        {
+                            var count = list.Count;
+                            if (count > 0)
+                            {
+                                var value = list[0];
+                            }
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        exceptions.Add(ex);
+                    }
+                }));
+            }
+
+            Task.WaitAll(tasks.ToArray());
+            Assert.Empty(exceptions);
+            Assert.True(list.Count >= 3); // At least the initial 3 items
+        }
+
+        [Fact]
+        public void ThreadSafety_GetOrAdd_DifferentPredicates_AddsMultipleItems()
+        {
+            var list = new ConcurrentList<int>();
+            var tasks = new List<Task<int>>();
+
+            // Each thread adds an item with a unique predicate
+            for (int i = 0; i < 10; i++)
+            {
+                var value = i;
+                tasks.Add(Task.Run(() => list.GetOrAdd(value, x => x == value)));
+            }
+
+            Task.WaitAll(tasks.ToArray());
+
+            // All 10 items should be added since each has a unique predicate
+            Assert.Equal(10, list.Count);
+            
+            // Verify all expected values are present
+            for (int i = 0; i < 10; i++)
+            {
+                Assert.Contains(i, list);
+            }
+        }
+
+        [Fact]
+        public void ThreadSafety_GetOrAdd_StressTest()
+        {
+            var list = new ConcurrentList<string>();
+            var tasks = new List<Task>();
+            var exceptions = new ConcurrentBag<Exception>();
+            var results = new ConcurrentBag<string>();
+
+            for (int i = 0; i < 100; i++)
+            {
+                var threadId = i;
+                tasks.Add(Task.Run(() =>
+                {
+                    try
+                    {
+                        var result = list.GetOrAdd($"item-{threadId}", x => x.StartsWith("item-"));
+                        results.Add(result);
+                    }
+                    catch (Exception ex)
+                    {
+                        exceptions.Add(ex);
+                    }
+                }));
+            }
+
+            Task.WaitAll(tasks.ToArray());
+            
+            Assert.Empty(exceptions);
+            Assert.Single(list); // Only one item should be added (first one wins)
+            
+            // All results should be the same (the first item added)
+            Assert.Single(results.Distinct());
+        }
+
+        [Fact]
+        public void GetOrAdd_PredicateThrowsException_PropagatesException()
+        {
+            var list = new ConcurrentList<int>(new[] { 1, 2, 3 });
+            
+            Assert.Throws<DivideByZeroException>(() =>
+                list.GetOrAdd(4, x => {
+                    if (x == 2)
+                        throw new DivideByZeroException("Test exception");
+                    return false;
+                })
+            );
+            
+            // List should remain unchanged
+            Assert.Equal(3, list.Count);
+        }
+
+        #endregion
+
         #region Edge Cases and Additional Coverage
 
         [Fact]

@@ -315,6 +315,47 @@ namespace Baubit.Collections
             }
         }
 
+        /// <summary>
+        /// Atomically adds an item to the list if no existing item matches the predicate, or returns the existing matching item.
+        /// </summary>
+        /// <param name="item">The item to add if no match is found.</param>
+        /// <param name="predicate">A function to test each element for a match. Should return true if the element matches the criteria.</param>
+        /// <returns>The newly added item if no match was found, or the existing matching item if one was found.</returns>
+        /// <exception cref="ArgumentNullException">Thrown when predicate is null.</exception>
+        public virtual T GetOrAdd(T item, Func<T, bool> predicate)
+        {
+            if (predicate == null)
+            {
+                throw new ArgumentNullException(nameof(predicate));
+            }
+
+            try
+            {
+                _lock.EnterWriteLock();
+                
+                // Check if any existing item matches the predicate
+                foreach (var existingItem in _store)
+                {
+                    if (predicate(existingItem))
+                    {
+                        return existingItem;
+                    }
+                }
+                
+                // No match found, add the new item
+                _store.Add(item);
+                return item;
+            }
+            catch
+            {
+                throw;
+            }
+            finally
+            {
+                _lock.ExitWriteLock();
+            }
+        }
+
         /// <inheritdoc/>
         IEnumerator IEnumerable.GetEnumerator()
         {

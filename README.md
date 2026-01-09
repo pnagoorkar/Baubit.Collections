@@ -37,6 +37,9 @@ Parallel.For(0, 100, i => list.Add(i));
 foreach (var item in list) {
     list.Add(999); // Won't affect the enumeration
 }
+
+// Atomically get-or-add: returns existing item if predicate matches, otherwise adds new item
+var result = list.GetOrAdd(42, x => x == 42);
 ```
 
 ## Installation
