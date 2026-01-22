@@ -21,7 +21,7 @@ namespace Baubit.Collections.Test.ConcurrentList
         public void Constructor_Default_CreatesEmptyList()
         {
             var list = new ConcurrentList<int>();
-            Assert.Equal(0, list.Count);
+            Assert.Empty(list);
         }
 
         [Fact]
@@ -41,7 +41,7 @@ namespace Baubit.Collections.Test.ConcurrentList
         public void Constructor_WithEmptyCollection_CreatesEmptyList()
         {
             var list = new ConcurrentList<int>(Array.Empty<int>());
-            Assert.Equal(0, list.Count);
+            Assert.Empty(list);
         }
 
         #endregion
@@ -52,10 +52,10 @@ namespace Baubit.Collections.Test.ConcurrentList
         public void Count_ReturnsCorrectValue()
         {
             var list = new ConcurrentList<int>();
-            Assert.Equal(0, list.Count);
+            Assert.Empty(list);
             
             list.Add(1);
-            Assert.Equal(1, list.Count);
+            Assert.Single(list);
             
             list.Add(2);
             Assert.Equal(2, list.Count);
@@ -111,7 +111,7 @@ namespace Baubit.Collections.Test.ConcurrentList
             var list = new ConcurrentList<int>();
             list.Add(42);
             
-            Assert.Equal(1, list.Count);
+            Assert.Single(list);
             Assert.Equal(42, list[0]);
         }
 
@@ -140,7 +140,7 @@ namespace Baubit.Collections.Test.ConcurrentList
             Assert.Equal(5, list.Count);
             
             list.Clear();
-            Assert.Equal(0, list.Count);
+            Assert.Empty(list);
         }
 
         [Fact]
@@ -148,7 +148,7 @@ namespace Baubit.Collections.Test.ConcurrentList
         {
             var list = new ConcurrentList<int>();
             list.Clear();
-            Assert.Equal(0, list.Count);
+            Assert.Empty(list);
         }
 
         #endregion
@@ -159,28 +159,28 @@ namespace Baubit.Collections.Test.ConcurrentList
         public void Contains_ExistingElement_ReturnsTrue()
         {
             var list = new ConcurrentList<int>(new[] { 1, 2, 3, 4, 5 });
-            Assert.True(list.Contains(3));
+            Assert.Contains(3, list);
         }
 
         [Fact]
         public void Contains_NonExistingElement_ReturnsFalse()
         {
             var list = new ConcurrentList<int>(new[] { 1, 2, 3, 4, 5 });
-            Assert.False(list.Contains(99));
+            Assert.DoesNotContain(99, list);
         }
 
         [Fact]
         public void Contains_EmptyList_ReturnsFalse()
         {
             var list = new ConcurrentList<int>();
-            Assert.False(list.Contains(1));
+            Assert.DoesNotContain(1, list);
         }
 
         [Fact]
         public void Contains_NullElement_WorksCorrectly()
         {
             var list = new ConcurrentList<string?>(new[] { "a", "b", null, "d" });
-            Assert.True(list.Contains(null));
+            Assert.Contains(null, list);
         }
 
         #endregion
@@ -289,7 +289,7 @@ namespace Baubit.Collections.Test.ConcurrentList
             
             Assert.True(result);
             Assert.Equal(4, list.Count);
-            Assert.False(list.Contains(3));
+            Assert.DoesNotContain(3, list);
         }
 
         [Fact]
@@ -322,14 +322,14 @@ namespace Baubit.Collections.Test.ConcurrentList
             Assert.True(result);
             Assert.Equal(4, removedItem);
             Assert.Equal(4, list.Count);
-            Assert.False(list.Contains(4));
+            Assert.DoesNotContain(4, list);
         }
 
         [Fact]
         public void Remove_WithSelector_NoMatch_ReturnsFalse()
         {
             var list = new ConcurrentList<string>(new[] { "a", "b", "c" });
-            var result = list.Remove(items => items.FirstOrDefault(x => x != null && x.StartsWith("z")), out var removedItem);
+            var result = list.Remove(items => items.FirstOrDefault(x => x != null && x.StartsWith("z"))!, out var removedItem);
             
             Assert.False(result);
             Assert.Null(removedItem);
@@ -386,7 +386,7 @@ namespace Baubit.Collections.Test.ConcurrentList
             Assert.True(result);
             Assert.Equal("banana", removedItem);
             Assert.Equal(2, list.Count);
-            Assert.False(list.Contains("banana"));
+            Assert.DoesNotContain("banana", list);
         }
 
         #endregion
@@ -576,7 +576,7 @@ namespace Baubit.Collections.Test.ConcurrentList
                     {
                         for (int j = 0; j < 1000; j++)
                         {
-                            Assert.True(list.Contains(50));
+                            Assert.Contains(50, list);
                         }
                     }
                     catch (Exception ex)
@@ -786,8 +786,9 @@ namespace Baubit.Collections.Test.ConcurrentList
                 }));
             }
 
+
             Task.WaitAll(tasks.ToArray());
-            Assert.Equal(0, list.Count);
+            Assert.Empty(list);
         }
 
         [Fact]
@@ -1126,7 +1127,7 @@ namespace Baubit.Collections.Test.ConcurrentList
             
             Assert.Equal(10000, largeList.Count);
             Assert.Equal(5000, largeList[4999]);
-            Assert.True(largeList.Contains(7500));
+            Assert.Contains(7500, largeList);
             Assert.Equal(9999, largeList.IndexOf(10000));
             
             largeList.Insert(5000, 99999);
@@ -1145,7 +1146,7 @@ namespace Baubit.Collections.Test.ConcurrentList
             
             Assert.Equal(5, items.Length);
             Assert.Equal(new[] { 1, 2, 3, 4, 5 }, items);
-            Assert.Equal(0, list.Count);
+            Assert.Empty(list);
         }
 
         [Fact]
@@ -1154,8 +1155,9 @@ namespace Baubit.Collections.Test.ConcurrentList
             var list = new TestableConcurrentList<int>();
             var items = list.TestRemoveAndReturnAll();
             
+            
             Assert.Empty(items);
-            Assert.Equal(0, list.Count);
+            Assert.Empty(list);
         }
 
         [Fact]
@@ -1227,7 +1229,7 @@ namespace Baubit.Collections.Test.ConcurrentList
             // One thread should have gotten all items, others should get empty arrays
             var allItems = tasks.SelectMany(t => t.Result).ToArray();
             Assert.Equal(1000, allItems.Length);
-            Assert.Equal(0, list.Count);
+            Assert.Empty(list);
             Assert.Empty(exceptions);
         }
 
@@ -1329,7 +1331,7 @@ namespace Baubit.Collections.Test.ConcurrentList
             list.RemoveAt(0);
             list.Clear();
             
-            Assert.Equal(0, list.Count);
+            Assert.Empty(list);
         }
 
         [Fact]
@@ -1337,9 +1339,10 @@ namespace Baubit.Collections.Test.ConcurrentList
         {
             var list = new ConcurrentList<string>(new[] { "HELLO", "WORLD" });
             
+            
             // Default comparer is case-sensitive
-            Assert.True(list.Contains("HELLO"));
-            Assert.False(list.Contains("hello"));
+            Assert.Contains("HELLO", list);
+            Assert.DoesNotContain("hello", list);
         }
 
         [Fact]
@@ -1357,9 +1360,9 @@ namespace Baubit.Collections.Test.ConcurrentList
         {
             var list = new ConcurrentList<int>();
             
-            Assert.Equal(0, list.Count);
+            Assert.Empty(list);
             Assert.False(list.IsReadOnly);
-            Assert.False(list.Contains(1));
+            Assert.DoesNotContain(1, list);
             Assert.Equal(-1, list.IndexOf(1));
             
             var array = new int[0];
