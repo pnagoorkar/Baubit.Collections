@@ -18,8 +18,8 @@ namespace Baubit.Collections
             {
                 try
                 {
-                    _lock.EnterReadLock();
-                    return _store.Count;
+                    lockSlim.EnterReadLock();
+                    return store.Count;
                 }
                 catch
                 {
@@ -27,7 +27,7 @@ namespace Baubit.Collections
                 }
                 finally
                 {
-                    _lock.ExitReadLock();
+                    lockSlim.ExitReadLock();
                 }
             }
         }
@@ -39,8 +39,8 @@ namespace Baubit.Collections
             {
                 try
                 {
-                    _lock.EnterReadLock();
-                    return _store[index];
+                    lockSlim.EnterReadLock();
+                    return store[index];
                 }
                 catch
                 {
@@ -48,7 +48,7 @@ namespace Baubit.Collections
                 }
                 finally
                 {
-                    _lock.ExitReadLock();
+                    lockSlim.ExitReadLock();
                 }
             }
 
@@ -56,8 +56,8 @@ namespace Baubit.Collections
             {
                 try
                 {
-                    _lock.EnterWriteLock();
-                    _store[index] = value;
+                    lockSlim.EnterWriteLock();
+                    store[index] = value;
                 }
                 catch
                 {
@@ -65,7 +65,7 @@ namespace Baubit.Collections
                 }
                 finally
                 {
-                    _lock.ExitWriteLock();
+                    lockSlim.ExitWriteLock();
                 }
             }
         }
@@ -77,14 +77,14 @@ namespace Baubit.Collections
 
         public ConcurrentList(IEnumerable<T> collection)
         {
-            _store = new List<T>(collection);
+            store = new List<T>(collection);
         }
 
 
         public bool IsReadOnly => false;
 
-        private readonly List<T> _store = new List<T>();
-        private readonly ReaderWriterLockSlim _lock = new ReaderWriterLockSlim();
+        private readonly List<T> store = new List<T>();
+        private readonly ReaderWriterLockSlim lockSlim = new ReaderWriterLockSlim();
 
         /// <summary>
         /// <inheritdoc/>
@@ -93,8 +93,8 @@ namespace Baubit.Collections
         {
             try
             {
-                _lock.EnterWriteLock();
-                _store.Add(item);
+                lockSlim.EnterWriteLock();
+                store.Add(item);
             }
             catch
             {
@@ -102,7 +102,7 @@ namespace Baubit.Collections
             }
             finally
             {
-                _lock.ExitWriteLock();
+                lockSlim.ExitWriteLock();
             }
         }
 
@@ -111,8 +111,8 @@ namespace Baubit.Collections
         {
             try
             {
-                _lock.EnterWriteLock();
-                _store.Clear();
+                lockSlim.EnterWriteLock();
+                store.Clear();
             }
             catch
             {
@@ -120,7 +120,7 @@ namespace Baubit.Collections
             }
             finally
             {
-                _lock.ExitWriteLock();
+                lockSlim.ExitWriteLock();
             }
         }
 
@@ -128,9 +128,9 @@ namespace Baubit.Collections
         {
             try
             {
-                _lock.EnterWriteLock();
-                var items = _store.ToArray();
-                _store.Clear();
+                lockSlim.EnterWriteLock();
+                var items = store.ToArray();
+                store.Clear();
                 return items;
             }
             catch
@@ -139,7 +139,7 @@ namespace Baubit.Collections
             }
             finally
             {
-                _lock.ExitWriteLock();
+                lockSlim.ExitWriteLock();
             }
         }
 
@@ -148,8 +148,8 @@ namespace Baubit.Collections
         {
             try
             {
-                _lock.EnterReadLock();
-                return _store.Contains(item);
+                lockSlim.EnterReadLock();
+                return store.Contains(item);
             }
             catch
             {
@@ -157,7 +157,7 @@ namespace Baubit.Collections
             }
             finally
             {
-                _lock.ExitReadLock();
+                lockSlim.ExitReadLock();
             }
         }
 
@@ -166,8 +166,8 @@ namespace Baubit.Collections
         {
             try
             {
-                _lock.EnterReadLock();
-                _store.CopyTo(array, arrayIndex);
+                lockSlim.EnterReadLock();
+                store.CopyTo(array, arrayIndex);
             }
             catch
             {
@@ -175,7 +175,7 @@ namespace Baubit.Collections
             }
             finally
             {
-                _lock.ExitReadLock();
+                lockSlim.ExitReadLock();
             }
         }
 
@@ -184,8 +184,8 @@ namespace Baubit.Collections
         {
             try
             {
-                _lock.EnterReadLock();
-                return _store.ToArray().AsEnumerable().GetEnumerator();
+                lockSlim.EnterReadLock();
+                return store.ToArray().AsEnumerable().GetEnumerator();
             }
             catch
             {
@@ -193,7 +193,7 @@ namespace Baubit.Collections
             }
             finally
             {
-                _lock.ExitReadLock();
+                lockSlim.ExitReadLock();
             }
         }
 
@@ -202,8 +202,8 @@ namespace Baubit.Collections
         {
             try
             {
-                _lock.EnterReadLock();
-                return _store.IndexOf(item);
+                lockSlim.EnterReadLock();
+                return store.IndexOf(item);
             }
             catch
             {
@@ -211,7 +211,7 @@ namespace Baubit.Collections
             }
             finally
             {
-                _lock.ExitReadLock();
+                lockSlim.ExitReadLock();
             }
         }
 
@@ -220,8 +220,8 @@ namespace Baubit.Collections
         {
             try
             {
-                _lock.EnterWriteLock();
-                _store.Insert(index, item);
+                lockSlim.EnterWriteLock();
+                store.Insert(index, item);
             }
             catch
             {
@@ -229,7 +229,7 @@ namespace Baubit.Collections
             }
             finally
             {
-                _lock.ExitWriteLock();
+                lockSlim.ExitWriteLock();
             }
         }
 
@@ -238,8 +238,8 @@ namespace Baubit.Collections
         {
             try
             {
-                _lock.EnterWriteLock();
-                return _store.Remove(item);
+                lockSlim.EnterWriteLock();
+                return store.Remove(item);
             }
             catch
             {
@@ -247,7 +247,7 @@ namespace Baubit.Collections
             }
             finally
             {
-                _lock.ExitWriteLock();
+                lockSlim.ExitWriteLock();
             }
         }
 
@@ -255,11 +255,11 @@ namespace Baubit.Collections
         {
             try
             {
-                _lock.EnterWriteLock();
-                item = selector(_store);
+                lockSlim.EnterWriteLock();
+                item = selector(store);
                 if (item != null)
                 {
-                    _store.Remove(item);
+                    store.Remove(item);
                     return true;
                 }
                 else
@@ -273,7 +273,7 @@ namespace Baubit.Collections
             }
             finally
             {
-                _lock.ExitWriteLock();
+                lockSlim.ExitWriteLock();
             }
         }
 
@@ -283,8 +283,8 @@ namespace Baubit.Collections
         {
             try
             {
-                _lock.EnterWriteLock();
-                _store.RemoveAt(index);
+                lockSlim.EnterWriteLock();
+                store.RemoveAt(index);
             }
             catch
             {
@@ -292,7 +292,7 @@ namespace Baubit.Collections
             }
             finally
             {
-                _lock.ExitWriteLock();
+                lockSlim.ExitWriteLock();
             }
         }
 
@@ -300,9 +300,9 @@ namespace Baubit.Collections
         {
             try
             {
-                _lock.EnterWriteLock();
-                var item = _store[index];
-                _store.RemoveAt(index);
+                lockSlim.EnterWriteLock();
+                var item = store[index];
+                store.RemoveAt(index);
                 return item;
             }
             catch
@@ -311,7 +311,7 @@ namespace Baubit.Collections
             }
             finally
             {
-                _lock.ExitWriteLock();
+                lockSlim.ExitWriteLock();
             }
         }
 
